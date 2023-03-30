@@ -19,7 +19,7 @@ git clone https://github.com/VTrelat/Fractals.git
 
 ### 1.2 Compilation
 
-This programp makes use of the [OpenMP](https://www.openmp.org/) library. To compile it, you need to have the OpenMP library installed on your system. If you are using GCC, make sure to have GCC 4.9 or higher.
+This program makes use of the [OpenMP](https://www.openmp.org/) library. To compile it, you need to have the OpenMP library installed on your system. If you are using GCC, make sure to have GCC 4.9 or higher.
 
 ```bash
 gcc --version
