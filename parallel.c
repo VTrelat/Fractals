@@ -26,7 +26,7 @@ unsigned int iterate(long double cx, long double cy, int max_iterations, long do
     {
         x1 = x0 * x0 - y0 * y0 + cx;
         y1 = 2 * fabsl(x0 * y0) + cy;
-        if (x1 * x1 + y1 * y1 > clipping)
+        if (x1 * x1 + y1 * y1 > clipping * clipping)
         {
             break;
         }
