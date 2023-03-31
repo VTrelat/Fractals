@@ -59,7 +59,7 @@ y1 = 2 * x0 * y0 + c0y;
 
 ### 1.3 Execution
 
-The program has 6 flags:
+The program has 7 flags:
 
 -   `zoom`: float, the zoom level (default: `1.0`)
 -   `c0x`: float, the initial x coordinate of the center of the image (default: `0.0`)
@@ -67,12 +67,11 @@ The program has 6 flags:
 -   `width`: int, the width of the image (default: `1000`)
 -   `height`: int, the height of the image (default: `1000`)
 -   `clipping`: int, the maximal modulus from the origin to be considered in the set (default: `2.0`)
+-   `filename`: str, name for the output image (default: `out.ppm`)
 
 ```bash
-Usage: ./fractal [-z zoom] [-x c0x] [-y c0y] [-w width] [-h height] [-c clipping]
+Usage: ./fractal [-z zoom] [-x c0x] [-y c0y] [-w width] [-h height] [-c clipping] [-o filename]
 ```
-
-We obtain a ppm image `out.ppm` in the current directory.
 
 ---
 
