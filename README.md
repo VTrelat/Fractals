@@ -59,17 +59,17 @@ y1 = 2 * x0 * y0 + c0y;
 
 ### 1.3 Execution
 
-The program takes 6 arguments:
+The program has 6 flags:
 
--   `zoom`: float, the zoom level
--   `c0x`: float, the initial x coordinate of the center of the image
--   `c0y`: float, the initial y coordinate of the center of the image
--   `width`: int, the width of the image
--   `height`: int, the height of the image
--   `clipping`: int, the maximal modulus from the origin to be considered in the set
+-   `zoom`: float, the zoom level (default: `1.0`)
+-   `c0x`: float, the initial x coordinate of the center of the image (default: `0.0`)
+-   `c0y`: float, the initial y coordinate of the center of the image (default: `0.0`)
+-   `width`: int, the width of the image (default: `1000`)
+-   `height`: int, the height of the image (default: `1000`)
+-   `clipping`: int, the maximal modulus from the origin to be considered in the set (default: `2.0`)
 
 ```bash
-Usage: ./fractal <zoom> <c0x> <c0y> <width> <height> <clipping>
+Usage: ./fractal [-z zoom] [-x c0x] [-y c0y] [-w width] [-h height] [-c clipping]
 ```
 
 We obtain a ppm image `out.ppm` in the current directory.
@@ -94,7 +94,13 @@ We could also only compute the upper half of the image and then mirror it since 
 With the following command:
 
 ```bash
-./fractal 1.0 0.0 0.0 1000 1000 2.0
+./fractal -z 1.0 -x 0.0 -y 0.0 -w 1000 -h 1000 -c 2.0
+```
+
+or
+
+```bash
+./fractal
 ```
 
 We obtain the following image:
@@ -109,7 +115,7 @@ Julia Island is part of the Mandelbrot set.
 It can be obtained with the following command:
 
 ```bash
-./fractal 0.00000011 -1.76877883 -0.00173891 2000 1000 2.0
+./fractal -z 0.00000011 -x -1.76877883 -y -0.00173891 -w 2000
 ```
 
 We obtain the following image:
@@ -133,7 +139,7 @@ It can also be shown that any number in the set is bounded by a modulus of $2$. 
 With the following command:
 
 ```bash
-./fractal 0.025 -1.7 -0.04 2000 1000 4.0
+./fractal -z 0.025 -w -1.7 -h -0.04 -w 2000 -c 4.0
 ```
 
 We obtain the following image:
