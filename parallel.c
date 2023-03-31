@@ -112,9 +112,10 @@ int main(int argc, char *argv[])
     int width = 1000;
     int height = 1000;
     long double clipping = 2.0;
+    char *filename = "out.ppm";
 
     int opt;
-    while ((opt = getopt(argc, argv, "z:x:y:w:h:c:")) != -1)
+    while ((opt = getopt(argc, argv, "z:x:y:w:h:c:o:")) != -1)
     {
         switch (opt)
         {
@@ -136,12 +137,14 @@ int main(int argc, char *argv[])
         case 'c':
             clipping = atof(optarg);
             break;
+        case 'o':
+            filename = optarg;
+            break;
         default:
-            fprintf(stderr, "Usage: %s [-z zoom] [-x c0x] [-y c0y] [-w width] [-h height] [-c clipping]\n", argv[0]);
+            fprintf(stderr, "Usage: %s [-z zoom] [-x c0x] [-y c0y] [-w width] [-h height] [-c clipping] [-o filename]\n", argv[0]);
             exit(EXIT_FAILURE);
         }
     }
-
     // parallel
     // measure time
     double start = omp_get_wtime();
@@ -180,7 +183,7 @@ int main(int argc, char *argv[])
     {
         im4[i] = paste_top_bottom(im3[2 * i], im3[2 * i + 1], width, height / 4);
     }
-    save_ppm(paste_top_bottom(im4[0], im4[1], width, height / 2), width, height, "out.ppm");
+    save_ppm(paste_top_bottom(im4[0], im4[1], width, height / 2), width, height, filename);
 #pragma endregion
 
     // sequential (for comparison)
