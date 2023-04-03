@@ -63,13 +63,14 @@ void save_ppm(unsigned char *image, int width, int height, char *filename)
 {
     register int i, j;
     FILE *fp = fopen(filename, "w");
-    fprintf(fp, "P3\n%d %d\n255\n", width, height);
+    fprintf(fp, "P6\n%d %d\n255\n", width, height);
     for (j = 0; j < height; j++)
     {
         for (i = 0; i < width; i++)
         {
             register unsigned char p = image[(j * width + i)];
-            fprintf(fp, "%d %d %d\n", p, p, p);
+            // write as grayscale luminance
+            fprintf(fp, "%c%c%c", p, p, p);
         }
     }
     fclose(fp);
