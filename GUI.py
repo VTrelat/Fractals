@@ -1,13 +1,15 @@
 import subprocess
 import tkinter as tk
 from tkinter import filedialog
+from tkinter import messagebox
 from PIL import Image, ImageTk
+import c_gen
 
 
 class PPMViewer:
     def __init__(self, master):
         self.master = master
-        self.master.title("PPM Viewer")
+        self.master.title("Fractal Viewer")
         # initial size of window
         self.master.geometry("960x540")
 
@@ -19,33 +21,13 @@ class PPMViewer:
         self.y = 0.0
         self.w = 960
         self.h = 540
+        self.x_eq = "x * x - y * y + cx"
+        self.y_eq = "2 * x * y + cy"
+        self.eq_window_open = False
+        self.render_window_open = False
 
         # make window non-resizable
         # self.master.resizable(False, False)
-
-        # create buttons in a frame
-        # self.buttons_frame = tk.Frame(master)
-
-        # self.open_button = tk.Button(
-        #     self.buttons_frame, text="Open", command=self.open_image)
-        # self.quit_button = tk.Button(
-        #     self.buttons_frame, text="Quit", command=self.master.quit)
-        # self.compile_button = tk.Button(
-        #     self.buttons_frame, text="Compile", command=compile_c)
-        # self.run_button = tk.Button(
-        #     self.buttons_frame, text="Run", command=self.run_and_open)
-
-        # create entry box
-        # self.entry_box = tk.Entry(self.buttons_frame)
-        # self.entry_box.insert(0, "z_{n+1} = z_{n}^{2} + c")
-
-        # add buttons to GUI on top but left aligned
-        # self.buttons_frame.pack(side=tk.TOP, fill=tk.X)
-        # self.open_button.pack(side=tk.LEFT)
-        # self.quit_button.pack(side=tk.LEFT)
-        # self.compile_button.pack(side=tk.LEFT)
-        # self.run_button.pack(side=tk.LEFT)
-        # self.entry_box.pack(side=tk.LEFT)
 
         # cascade menu
         self.menu = tk.Menu(self.master)
@@ -53,19 +35,24 @@ class PPMViewer:
         self.file_menu = tk.Menu(self.menu)
         self.menu.add_cascade(label="File", menu=self.file_menu)
         self.file_menu.add_command(label="Open", command=self.open_image)
+        self.file_menu.add_command(
+            label="Render", command=self.create_render_window)
         self.file_menu.add_command(label="Quit", command=self.master.quit)
 
         self.c_menu = tk.Menu(self.menu)
         self.menu.add_cascade(label="C", menu=self.c_menu)
-        self.c_menu.add_command(label="Compile", command=compile_c)
+        self.c_menu.add_command(label="Compile", command=self.compile)
         self.c_menu.add_command(label="Run", command=self.run_and_open)
 
-        self.window_menu = tk.Menu(self.menu)
-        self.menu.add_cascade(label="Window", menu=self.window_menu)
-        self.window_menu.add_command(label="Reset", command=self.reset_image)
+        self.image_menu = tk.Menu(self.menu)
+        self.menu.add_cascade(label="Image", menu=self.image_menu)
 
-        self.quality_menu = tk.Menu(self.window_menu)
-        self.window_menu.add_cascade(label="Quality", menu=self.quality_menu)
+        self.image_menu.add_command(label="Reset", command=self.reset_image)
+        self.image_menu.add_command(
+            label="Equation", command=self.equation_window)
+        self.quality_menu = tk.Menu(self.image_menu)
+        self.image_menu.add_cascade(label="Quality", menu=self.quality_menu)
+
         self.quality_menu.add_command(
             label="Very low", command=lambda: self.set_quality(640, 360))
         self.quality_menu.add_command(
@@ -81,13 +68,45 @@ class PPMViewer:
         self.master.bind("<Command-q>", self.master.quit)
         self.master.bind("<Command-r>", lambda e: self.reset_image())
 
+    def equation_window(self):
+        if not self.eq_window_open:
+            self.eq_window_open = True
+            self.entry_window = tk.Toplevel(self.master)
+            self.entry_window.title("Equation")
+            self.entry_window.resizable(False, False)
+            self.label_x = tk.Label(self.entry_window, text="x = ")
+            self.label_x.grid(row=0, column=0)
+            self.entry_x = tk.Entry(self.entry_window)
+            self.entry_x.grid(row=0, column=1)
+            self.entry_x.insert(0, self.x_eq)
+            self.label_y = tk.Label(self.entry_window, text="y = ")
+            self.label_y.grid(row=1, column=0)
+            self.entry_y = tk.Entry(self.entry_window)
+            self.entry_y.grid(row=1, column=1)
+            self.entry_y.insert(0, self.y_eq)
+            self.eq_window_ok_button = tk.Button(
+                self.entry_window, text="OK", command=self.set_equation)
+            self.eq_window_ok_button.grid(row=2, column=0, columnspan=2)
+            self.entry_window.bind("<Return>", lambda e: self.set_equation())
+
+    def set_equation(self):
+        self.x_eq = self.entry_x.get()
+        self.y_eq = self.entry_y.get()
+        self.entry_window.destroy()
+        self.eq_window_open = False
+
+        self.compile()
+        self.reset_image()
+        self.run_and_open()
+
     def display_on_resize(self, event):
         new_w = event.width - event.width % 4
         new_h = event.height - event.height % 4
         if self.w != new_w or self.h != new_h:
             self.w = new_w
             self.h = new_h
-            self.run_and_open()
+            if self.canvas:
+                self.run_and_open()
 
     def set_quality(self, w, h):
         self.w = w
@@ -131,31 +150,61 @@ class PPMViewer:
         self.canvas.create_rectangle(
             0, 0, 120, 30, fill="black", outline="")
         self.canvas.create_text(10, 8, anchor=tk.NW,
-                                text="Zoom: " + '{:.{digits}e}'.format(1/self.z, digits=2))
+                                text="Zoom: " + '{:.{digits}e}'.format(1/self.z, digits=2), fill="white")
 
     def zoom(self, event):
-        # zoom in or out on mouse wheel scroll
-        if event.delta > 0:
-            old_z = self.z
-            self.z /= (1 + event.delta / 20)
-            print(event.x - self.w/2, event.y - self.h/2, self.z)
-            self.x += (event.x - self.w/2) * abs(old_z - self.z)/100
-            self.y += (event.y - self.h/2) * abs(old_z - self.z)/100
-            print(self.x, self.y)
-            self.run_and_open()
+        if self.canvas:
+            if event.delta > 0:
+                old_z = self.z
+                self.z /= (1 + event.delta / 20)
+                self.x += (event.x - self.w/2) * abs(old_z - self.z)/100
+                self.y += (event.y - self.h/2) * abs(old_z - self.z)/100
+                self.run_and_open()
+            else:
+                old_z = self.z
+                self.z *= (1 - event.delta / 20)
+                self.x -= (event.x - self.w/2) * abs(old_z - self.z)/200
+                self.y -= (event.y - self.h/2) * abs(old_z - self.z)/200
+                self.run_and_open()
+
+    def compile(self):
+        write_c = c_gen.c_program(self.x_eq, self.y_eq)
+        if write_c == 0:
+            compile_c()
         else:
-            old_z = self.z
-            self.z *= (1 - event.delta / 20)
-            print(event.x - self.w/2, event.y - self.h/2, self.z)
-            self.x -= (event.x - self.w/2) * abs(old_z - self.z)/200
-            self.y -= (event.y - self.h/2) * abs(old_z - self.z)/200
-            print(self.x, self.y)
-            self.run_and_open()
+            print("C program not compiled!")
+
+    def create_render_window(self):
+        if not self.render_window_open:
+            self.render_window_open = True
+            self.render_window = tk.Toplevel(self.master)
+            self.render_window.title("Render Settings")
+            self.label_x = tk.Label(self.render_window, text="Width = ")
+            self.label_x.grid(row=0, column=0)
+            self.entry_x = tk.Entry(self.render_window)
+            self.entry_x.grid(row=0, column=1)
+            self.label_y = tk.Label(self.render_window, text="Height ")
+            self.label_y.grid(row=1, column=0)
+            self.entry_y = tk.Entry(self.render_window)
+            self.entry_y.grid(row=1, column=1)
+            self.render_window_ok_button = tk.Button(
+                self.render_window, text="OK", command=self.render_image)
+            self.render_window_ok_button.grid(row=2, column=0, columnspan=2)
+
+    def render_image(self):
+        w = self.entry_x.get()
+        h = self.entry_y.get()
+        self.render_window.destroy()
+        self.render_window_open = False
+        run_c(self.z, self.x, self.y, w, h, 'render.ppm')
+        # show info message
+        messagebox.showinfo(
+            "Render Complete", "Rendered image saved to render.ppm")
 
 
 def compile_c():
     result = subprocess.run(['gcc-12', '-O3', '-fopenmp',
-                             'parallel.c', '-o', 'py_compiled'], capture_output=True)
+                            'py_code.c', '-o', 'py_compiled'], capture_output=True)
     if result.returncode == 0:
         print('C program compiled successfully!')
     else:
