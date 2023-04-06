@@ -2,8 +2,9 @@
 
 ## Table of Contents
 
-1.  [Usage](#usage)
-2.  [Examples](#examples)
+1.  [Usage](#1-usage)
+2.  [Examples](#2-examples)
+3.  [GUI](#3-gui)
 
 ---
 
@@ -146,3 +147,38 @@ We obtain the following image:
 <div style="text-align:center">
 <img src="./images/burningship.png" width=500 height=250 />
 </div>
+
+## 3. GUI
+
+Lately, I also developed a GUI for this program. It is made in Python with the [Tkinter](https://docs.python.org/3/library/tkinter.html) and [Pillow](https://pillow.readthedocs.io/en/stable/) libraries.
+To use it, you need to have Python 3 installed on your system as well as the Pillow library.
+
+```bash
+python3 -m pip install Pillow
+```
+
+Then, you can run the GUI with the following command:
+
+```bash
+python3 GUI.py
+```
+
+A similar window should appear:
+
+<div style="text-align:center">
+<img src="./images/gui.png" width=300 />
+</div>
+
+### Features:
+
+-   it runs the C parallel program for the fractal generation (so it is fast)
+-   resizable window (the image will be resized accordingly)
+    -   it is especially helpful for quickly zooming in on a specific part of the fractal (smaller images render faster)
+-   zoom in/out with the mouse wheel
+-   if you are lost, simply go to `Image > Reset`
+-   render an image with `File > Render`
+    -   a window will appear to choose the size of the image and a popup will appear when the image is rendered
+-   change the equation used to generate the fractal with `Image > Equation`
+    -   a window will appear to choose the equation
+    -   you will be asked to enter the equation for $x$ and $y$ in terms of `x`, `y`, `c0x` and `c0y` where $x = Re(z)$, $y = Im(z)$, $c_x = Re(c)$ and $c_y = Im(c)$
+-   C code can be compiled / run separately with `File > Compile` and `File > Run` (with default values)
