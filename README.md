@@ -18,7 +18,7 @@ Simply clone the repository and you are ready to go.
 git clone https://github.com/VTrelat/Fractals.git
 ```
 
-If you want to use the graphical interface (user friendly), directly skip to section [3. Python GUI](#3-python-gui)
+The following sections detail how the C program should be compiled and used in command line mode. If you want to use the graphical interface (user friendly), directly skip to section [3. Python GUI](#3-python-gui). However, I recommend reading the [examples](#2-examples) to understand how the generation works and what equations refer to.
 
 ### 1.2 Compilation
 
