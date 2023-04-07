@@ -90,6 +90,8 @@ $$
 
 where $z_0 = 0$ and $c$ is a complex number.
 
+Recall that we can define two sequences $x_{n+1} = Re(z_{n+1}) = x_n^2 - y_n^2 + Re(c)$ and $y_{n+1} = Im(z_{n+1}) = 2 x_n y_n + Im(c)$ in order to write the equation in the code.
+
 It can be shown that any number in the Mandelbrot set is bounded by a modulus of $2$. Therefore, the clipping value can be set to $2$.
 We could also only compute the upper half of the image and then mirror it since the Mandelbrot set is symmetrical with respect to the real axis, but this is specific to the Mandelbrot set.
 
@@ -113,7 +115,7 @@ We obtain the following image:
 
 ### 2.2 Julia Island
 
-Julia Island is part of the Mandelbrot set.
+Julia Island is part of the Mandelbrot set (and thus is generated from the same equation).
 It can be obtained with the following command:
 
 ```bash
@@ -135,6 +137,8 @@ z_{n+1} = \left| z_n \right|^2 + c
 $$
 
 where $z_0 = 0$ and $c$ is a complex number.
+
+From this, we define two sequences $x_{n+1} = Re(z_{n+1}) = x_n^2 - y_n^2 + Re(c)$ and $y_{n+1} = Im(z_{n+1}) = 2 \left| x_n y_n \right| + Im(c)$.
 
 It can also be shown that any number in the set is bounded by a modulus of $2$. Therefore, the clipping value can be set to $2$.
 
