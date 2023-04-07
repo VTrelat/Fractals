@@ -4,7 +4,7 @@
 
 1.  [Usage](#1-usage)
 2.  [Examples](#2-examples)
-3.  [GUI](#3-gui)
+3.  [Python GUI](#3-python-gui)
 
 ---
 
@@ -148,9 +148,9 @@ We obtain the following image:
 <img src="./images/burningship.png" width=500 height=250 />
 </div>
 
-## 3. GUI
+## 3. Python GUI
 
-Lately, I also developed a GUI for this program. It is made in Python with the [Tkinter](https://docs.python.org/3/library/tkinter.html) and [Pillow](https://pillow.readthedocs.io/en/stable/) libraries.
+Lately, I also developed a GUI (_Graphical User Interface_) for this program. It is made in Python with the [Tkinter](https://docs.python.org/3/library/tkinter.html) and [Pillow](https://pillow.readthedocs.io/en/stable/) libraries.
 To use it, you need to have Python 3 installed on your system as well as the Pillow library.
 
 ```bash
