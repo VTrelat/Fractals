@@ -18,6 +18,8 @@ Simply clone the repository and you are ready to go.
 git clone https://github.com/VTrelat/Fractals.git
 ```
 
+If you want to use the graphical interface (user friendly), directly skip to section [3. Python GUI](#3-python-gui)
+
 ### 1.2 Compilation
 
 This program makes use of the [OpenMP](https://www.openmp.org/) library. To compile it, you need to have the OpenMP library installed on your system. If you are using GCC, just make sure to have GCC 4.9 or higher.
