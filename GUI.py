@@ -28,6 +28,8 @@ class PPMViewer:
         self.clipping_eq = "2.0"
         self.eq_window_open = False
         self.render_window_open = False
+        self.drag_start_x = None
+        self.drag_start_y = None
 
         # make window non-resizable
         # self.master.resizable(False, False)
@@ -66,9 +68,13 @@ class PPMViewer:
 
         # binds
         self.master.bind("<MouseWheel>", self.zoom)
+        self.master.bind("<Button-1>", self.drag_start)
+        self.master.bind("<B1-Motion>", self.drag_move)
+        self.master.bind("<ButtonRelease-1>", self.drag_end)
         self.master.bind("<Configure>", self.display_on_resize)
         self.master.bind("<Command-q>", self.master.quit)
         self.master.bind("<Command-r>", lambda e: self.reset_image())
+        self.master.bind("<Command-e>", lambda e: self.create_render_window())
 
     def open_mandelbrot(self):
         self.x_eq = "x * x - y * y + cx"
@@ -171,23 +177,42 @@ class PPMViewer:
         self.canvas.pack()
 
         # display zoom level on canvas
-        self.canvas.create_rectangle(0, 0, 120, 30, fill="black", outline="")
-        self.canvas.create_text(10, 8, anchor=tk.NW,text="Zoom: " + '{:.{digits}e}'.format(1/self.z, digits=2), fill="white")
+        self.canvas.create_rectangle(0, 0, 105, 48, fill="black", outline="")
+        self.canvas.create_text(10, 8, anchor=tk.NW,text="Zoom: " + '{:.{digits}e}'.format(1/self.z, digits=2), fill="white", font=("Helvetica", 12, "bold"))
+        self.canvas.create_text(10, 20, anchor=tk.NW,text="x: " + '{:.{digits}e}'.format(self.x, digits=6), fill="white", font=("Helvetica", 10, ""))
+        self.canvas.create_text(10, 32, anchor=tk.NW,text="y: " + '{:.{digits}e}'.format(-self.y, digits=6), fill="white", font=("Helvetica", 10, ""))
 
     def zoom(self, event):
         if self.canvas:
             if event.delta > 0:
                 old_z = self.z
-                self.z /= (1 + event.delta / 20)
+                self.z /= (1 + event.delta / 10)
                 self.x += (event.x - self.w/2)/(self.w) * self.z
                 self.y += (event.y - self.h/2)/(self.h) * self.z
                 self.run_and_open()
             else:
                 old_z = self.z
-                self.z *= (1 - event.delta / 20)
+                self.z *= (1 - event.delta / 10)
                 self.x -= (event.x - self.w/2)/(self.w) * self.z
                 self.y -= (event.y - self.h/2)/(self.h) * self.z
                 self.run_and_open()
+
+    def drag_start(self, event):
+        if self.canvas:
+            self.canvas.scan_mark(event.x, event.y)
+            self.drag_start_x = event.x
+            self.drag_start_y = event.y
+
+    def drag_move(self, event):
+        if self.canvas:
+            self.canvas.scan_dragto(event.x, event.y, gain=1)
+
+    def drag_end(self, event):
+        if self.canvas:
+            self.x += (self.drag_start_x - event.x)/min(self.w, self.h)*self.z*4
+            self.y += (self.drag_start_y - event.y)/min(self.w, self.h)*self.z*4
+            self.run_and_open()
+
 
     def compile(self):
         write_c = c_gen.c_program(self.x_eq, self.y_eq)
@@ -211,6 +236,15 @@ class PPMViewer:
             self.entry_y.grid(row=1, column=1)
             self.render_window_ok_button = tk.Button(self.render_window, text="OK", command=self.render_image)
             self.render_window_ok_button.grid(row=2, column=0, columnspan=2)
+            self.render_window.resizable(False, False)
+            self.render_window.bind('<Return>', lambda e:self.render_image())
+            self.render_window.bind('<Escape>', lambda e:self.close_render_window())
+            self.render_window.protocol("WM_DELETE_WINDOW", self.close_render_window)
+            
+
+    def close_render_window(self):
+        self.render_window.destroy()
+        self.render_window_open = False
 
     def render_image(self):
         w = self.entry_x.get()
