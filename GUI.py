@@ -13,7 +13,7 @@ class PPMViewer:
         self.master = master
         self.master.title("Fractal Viewer")
         # initial size of window
-        self.master.geometry("960x540")
+        self.master.geometry("480x270")
 
         self.image = None
         self.image_tk = None
@@ -21,8 +21,8 @@ class PPMViewer:
         self.z = 1.0
         self.x = 0.0
         self.y = 0.0
-        self.w = 960
-        self.h = 540
+        self.w = 480
+        self.h = 270
         self.x_eq = "x * x - y * y + cx"
         self.y_eq = "2 * x * y + cy"
         self.clipping_eq = "2.0"
@@ -258,7 +258,7 @@ class PPMViewer:
 
 
 def compile_c():
-    result = subprocess.run(['gcc-12', '-O3', '-fopenmp', 'py_code.c', '-o', 'py_compiled'], capture_output=True)
+    result = subprocess.run(['gcc-13', '-O3', '-fopenmp', 'py_code.c', '-o', 'py_compiled'], capture_output=True)
     if result.returncode == 0:
         # print('C program compiled successfully!')
         messagebox.showinfo("Compile Complete", "C program compiled successfully!")
