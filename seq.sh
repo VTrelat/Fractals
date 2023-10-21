@@ -11,5 +11,5 @@ do
     result=$(echo "$result / $alpha" | bc -l);
     # result=$(echo "1 - (1 - $z) / (1 + e(-1 * $i / (0.2*$N)+ $N / 10))" | bc -l);
     echo "[$i/$N, $result]";
-    ./parallel -z $result -x $x -y $y -w 3840 -h 2160 -o seq/$i.ppm
+    ./parallel -z $result -x $x -y $y -w 3840 -h 2160 -o seq/$i.ppm &
 done
