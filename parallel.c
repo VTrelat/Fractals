@@ -44,7 +44,7 @@ unsigned char *compute_set(long double zoom, long double c0x, long double c0y, i
     register int i, j;
     for (j = 0; j < height; j++)
     {
-        printf("\rThread %d: %.2f%%", thread_id, 100.0 * j / (height - 1));
+        // printf("\rThread %d: %.2f%%", thread_id, 100.0 * j / (height - 1));
         for (i = 0; i < width; i++)
         {
             long double x0 = (zoom * (i + offset_i) / height + c0x);
@@ -148,7 +148,7 @@ int main(int argc, char *argv[])
     }
     // parallel
     // measure time
-    double start = omp_get_wtime();
+    // double start = omp_get_wtime();
 
     unsigned char *im[16];
 #pragma omp parallel for
@@ -159,8 +159,8 @@ int main(int argc, char *argv[])
         im[i] = compute_set(zoom, c0x, c0y, width / 4, height / 4, MAX_ITERATIONS, clipping, x_offset, y_offset, i);
     }
 #pragma endregion
-    double end = omp_get_wtime();
-    printf("\nTime: %.2f s\n", end - start);
+    // double end = omp_get_wtime();
+    // printf("\nTime: %.2f s\n", end - start);
     unsigned char *im2[8];
 #pragma omp for
     for (int i = 0; i < 4; i++)
