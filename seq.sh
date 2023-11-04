@@ -5,7 +5,7 @@ x=-1.255615900225
 y=0.03497725995
 result=1.0
 alpha=$(echo "e(-l($z)/$N)" | bc -l);
-for i in $(seq 5286 16 $N)
+for i in $(seq 9000 16 $N)
 do
     # result=$(echo "e(-$i/20)" | bc -l);
     # result=$(echo "1 - (1 - $z) / (1 + e(-1 * $i / (0.2*$N)+ $N / 10))" | bc -l);q
